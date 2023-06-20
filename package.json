@@ -22,7 +22,8 @@
     "nodemailer": "^6.9.0",
     "nodemon": "^2.0.22",
     "path": "^0.12.7",
-    "randomstring": "^1.2.3"
+    "randomstring": "^1.2.3",
+    "sharp": "^0.32.1"
   },
   "repository": {
     "type": "git",

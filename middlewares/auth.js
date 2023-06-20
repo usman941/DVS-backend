@@ -29,14 +29,15 @@ const verifyToken = async (req, res, next) => {
   // }
 };
 const verifyAdmin = async (req, res, next) => {
-  const token = req.headers.authorization.split(" ")[1];
-  if (!token) {
-    return res.status(401).json({ success: false, msg: "Token is required for authentication." });
-  }
 
   try {
+    if(!req.headers.authorization)
+    {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, config.secret_jwt);
-    console.log(decoded);
+     console.log(decoded);
     req.user = decoded; // Store the decoded token payload in req.user
 
     if (req.user.isAdmin) {
@@ -48,5 +49,4 @@ const verifyAdmin = async (req, res, next) => {
     return res.status(401).json({ success: false, msg: "Invalid token." });
   }
 };
-
 module.exports = {verifyToken,verifyAdmin};

@@ -65,12 +65,14 @@ const createApplication = async (req, res, next) => {
     const baseUrl = `http://localhost:3000`;
 
     if (req.files && req.files.degreeImage && req.files.degreeImage.length > 0) {
-      degreeImage = `${baseUrl}/degreeImages/${req.files.degreeImage[0].filename}`;
+      const subfolderName = req.body.degree_reg_no; // Assuming degree_reg_no is provided in the request body
+      degreeImage = `${baseUrl}/degreeImages/${subfolderName}/${req.files.degreeImage[0].filename}`;
     }
     let degreePdf = '';
 
     if (req.files && req.files.degreePdf && req.files.degreePdf.length > 0) {
-      degreePdf = `${baseUrl}/degreeImages/${req.files.degreePdf[0].filename}`;
+      const subfolderName = req.body.degree_reg_no; 
+      degreePdf = `${baseUrl}/degreeImages/${subfolderName}/${req.files.degreePdf[0].filename}`;
     }
     const application = new Application({
       fullname,
@@ -91,7 +93,7 @@ const createApplication = async (req, res, next) => {
       msg: 'Application submitted successfully',
     });
   });
-};
+}
 
 
 // Handle GET request to retrieve all applications
@@ -109,12 +111,7 @@ const getAllApplications = async (req, res) => {
 const count_Applications = async(req,res)=>{
   try {
     const count = await Application.countDocuments();
-    if(count){
-      res.send({ count });
-    }
-    else{
-      res.send({msg:"No Users Found"})
-    }
+      res.status(200).json({ count : count });
   } catch (error) {
     console.log(error);
   }
@@ -192,7 +189,7 @@ const updateApplicationStatus = async (req, res) => {
 
 const downloadDegreedocs = async (req, res) => {
   try {
-    const { degree_reg_no } = req.body;
+    const { degree_reg_no } = req.params;
 
     // Get the subdirectory path based on degree_reg_no
     const degreeFolderPath = path.join(__dirname, '..', 'public', 'degreeImages', degree_reg_no);
@@ -247,26 +244,26 @@ const countApplicationsByStatus = async (req, res) => {
     res.status(500).send("Internal server error");
   }
 };
-const countQueriesByAdminResponse = async (req, res) => {
-  try {
-    const nullResponseCount = await ContactUs.countDocuments({ adminResponse: null });
-    const nonNullResponseCount = await ContactUs.countDocuments({ adminResponse: { $ne: null } });
+// const countQueriesByAdminResponse = async (req, res) => {
+//   try {
+//     const nullResponseCount = await ContactUs.countDocuments({ adminResponse: null });
+//     const nonNullResponseCount = await ContactUs.countDocuments({ adminResponse: { $ne: null } });
 
-    res.status(200).json({ success: true, nullResponseCount, nonNullResponseCount });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to count queries.', error: error.message });
-  }
-};
+//     res.status(200).json({ success: true, nullResponseCount, nonNullResponseCount });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: 'Failed to count queries.', error: error.message });
+//   }
+// };
 
-const countAllQueries = async (req, res) => {
-  try {
-    const queryCount = await ContactUs.countDocuments();
+// const countAllQueries = async (req, res) => {
+//   try {
+//     const queryCount = await ContactUs.countDocuments();
 
-    res.status(200).json({ success: true, queryCount });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to count queries.', error: error.message });
-  }
-};
+//     res.status(200).json({ success: true, queryCount });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: 'Failed to count queries.', error: error.message });
+//   }
+// };
 module.exports = {
   countApplicationsByStatus,
   getAcceptedApplications,

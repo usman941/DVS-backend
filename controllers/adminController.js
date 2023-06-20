@@ -54,28 +54,39 @@ const adminProfile = async (req, res) => {
  }
  };
 // Update Admin password 
-const update_password = async(req, res)=>{
+// Update Admin password 
+// Secure Password generate method
+const securePassword = async(password)=>{
   try {
-      const user_id =   req.userData._id ;
-      const password = req.body.password;
-
-      const data = await User.findOne({ _id:user_id });
-      if(data)
-      {
-         const newPasword = await securePassword(password);
-
-       const userdata = await  User.findByIdAndUpdate({_id:user_id},{$set:{
-          password:newPasword
-         }});
-         res.status(200).send({success:true,message:"Admin Password has been updated!"});
-      }
-      else{
-          res.status(200).send({success:false, message:"User id not found"});
-      }
+      
+     const passwordHash = await bcrypt.hash(password,10);
+     return passwordHash;
   } catch (error) {
-      res.status(400).send(error.message);
+      res.status(400).send(error.message); 
   }
 }
+const update_password = async (req, res) => {
+  try {
+    const user_id = req.user._id;
+    const { password, confirm_password } = req.body;
+
+    if (password !== confirm_password) {
+      return res.status(400).json({ success: false, message: "Password and confirm password do not match" });
+    }
+
+    const data = await User.findOne({ _id: user_id });
+    if (data) {
+      const newPasword = await securePassword(password);
+
+      const userdata = await User.findByIdAndUpdate({ _id: user_id }, { $set: { password: newPasword } });
+      res.status(200).send({ success: true, message: "Admin Password has been updated!" });
+    } else {
+      res.status(200).send({ success: false, message: "User id not found" });
+    }
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
 
 // Admin Forget Password Method
 const forget_password = async(req,res)=>{

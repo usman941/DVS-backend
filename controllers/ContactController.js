@@ -34,7 +34,7 @@ const createQuery = async (req, res) => {
   
       const queriesWithUserDetails = queries.map((query) => {
         const { _id, query: queryText, user_id } = query;
-        const { name } = user_id;
+        const name = user_id ? user_id.name : null; // Perform null check before accessing 'name'
         return { _id, query: queryText, user: { name } };
       });
   
@@ -43,6 +43,7 @@ const createQuery = async (req, res) => {
       res.status(500).json({ success: false, message: "Failed to retrieve queries.", error: error.message });
     }
   };
+  
   
 // Query Response Update  
   const updateQueryResponse = async (req, res) => {

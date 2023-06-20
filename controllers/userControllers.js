@@ -36,8 +36,7 @@ const register_user = async(req, res)=>{
             metamaskid: req.body.metamaskid,
             name: req.body.name,
             email: req.body.email,
-            password: spassword,
-            image: req.file.filename
+            password: spassword
     });
             const user_data = await user.save();
             res.status(200).send({success:true,data:user_data});
@@ -220,7 +219,7 @@ const sendresetPasswordMail = async(name,email,token)=>{
            from: config.emailAdmin,
            to : email,
            subject: 'For Password Reset',
-           html:'<p> Hi'+name+'please click on the link <a href="http://127.0.0.1:3000/api/reset-password?token='+token+'">to reset your password </a>'
+           html:'<p> Hi'+name+'please click on the link <a href="http://127.0.0.1:3001/updatePassword?token='+token+'">to reset your password </a>'
         }
         transporter.sendMail(mailOptions,function(error,info){
           if(error)
